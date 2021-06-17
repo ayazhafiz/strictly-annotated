@@ -1,0 +1,8 @@
+(library
+  (name strictly_annotated)
+  (modules strictly_annotated))
+
+(test
+  (name test)
+  (modules test)
+  (libraries strictly_annotated alcotest))
