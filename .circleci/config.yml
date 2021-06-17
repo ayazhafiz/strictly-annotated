@@ -1,0 +1,15 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: ocaml/opam
+    steps:
+      - checkout
+      - run: eval $(opam env) && opam install -y alcotest dune
+      - run: eval $(opam env) && dune test 
+
+workflows:
+  test:
+    jobs:
+      - test
