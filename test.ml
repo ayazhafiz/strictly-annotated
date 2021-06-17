@@ -22,102 +22,102 @@ let page7_cases =
     ( 32,
       rm1
         {|
-if a == b   ; new conditional
-then a << 2 ; true branch
-else a + b  ; false branch|},
+if a == b   # new conditional
+then a << 2 # true branch
+else a + b  # false branch|},
       rm1
         {|
-if a == b   ; new conditional
-then a << 2 ; true branch
-else a + b  ; false branch|}
+if a == b   # new conditional
+then a << 2 # true branch
+else a + b  # false branch|}
     );
     ( 15,
       rm1
         {|
-if a == b   ; new conditional
-then a << 2 ; true branch
-else a + b  ; false branch|},
+if a == b   # new conditional
+then a << 2 # true branch
+else a + b  # false branch|},
       rm1
         {|
-if a == b   ; new conditional
-then a << 2 ; true branch
-else a + b  ; false branch|}
+if a == b   # new conditional
+then a << 2 # true branch
+else a + b  # false branch|}
     );
     ( 10,
       rm1
         {|
-if a == b ; new conditional
-then      ; true branch
+if a == b # new conditional
+then      # true branch
   a << 2
-else a + b ; false branch|},
+else a + b # false branch|},
       rm1
         {|
-if a == b  ; new conditional
-then       ; true branch
+if a == b  # new conditional
+then       # true branch
   a << 2
-else a + b ; false branch|}
+else a + b # false branch|}
     );
     ( 8,
       rm1
         {|
-if ; new conditional
+if # new conditional
   a == b
-then ; true branch
+then # true branch
   a << 2
-else ; false branch
+else # false branch
   a + b|},
       rm1
         {|
-if       ; new conditional
+if       # new conditional
   a == b
-then     ; true branch
+then     # true branch
   a << 2
-else     ; false branch
+else     # false branch
   a + b|}
     );
     ( 7,
       rm1
         {|
-if ; new conditional
+if # new conditional
   a ==
     b
-then ; true branch
+then # true branch
   a <<
     2
-else ; false branch
+else # false branch
   a + b|},
       rm1
         {|
-if      ; new conditional
+if      # new conditional
   a ==
     b
-then    ; true branch
+then    # true branch
   a <<
     2
-else    ; false branch
+else    # false branch
   a + b|}
     );
     ( 6,
       rm1
         {|
-if ; new conditional
+if # new conditional
   a ==
     b
-then ; true branch
+then # true branch
   a <<
     2
-else ; false branch
+else # false branch
   a +
     b|},
       rm1
         {|
-if     ; new conditional
+if     # new conditional
   a ==
     b
-then   ; true branch
+then   # true branch
   a <<
     2
-else   ; false branch
+else   # false branch
   a +
     b|}
     );
@@ -126,14 +126,14 @@ else   ; false branch
 let page7_tests =
   List.map
     (fun (w, expect, _) ->
-      mk_test (string_of_int w) expect (fun () -> pretty w " ; " page7))
+      mk_test (string_of_int w) expect (fun () -> pretty w " # " page7))
     page7_cases
 
 let page7_global_align_tests =
   List.map
     (fun (w, _, expect) ->
       mk_test (string_of_int w) expect (fun () ->
-          pretty ~global_align:true w " ; " page7))
+          pretty ~global_align:true w " # " page7))
     page7_cases
 
 let dense_sparse_cases =
