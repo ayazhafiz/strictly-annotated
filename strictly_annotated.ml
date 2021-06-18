@@ -64,8 +64,8 @@ let rec fits w = function
   | (i, m, Nest (j, x)) :: rest -> fits w ((i + j, m, x) :: rest)
   | (i, _, Group x) :: rest -> fits w ((i, Flat, x) :: rest)
 
-(** [sparse d] determines if the document [d] is sparsely annotated in the sense
-    that each line with a break has at most one annotation. *)
+(** [sparse d] determines if the flat group [d] is sparsely annotated in the
+    sense that there are no [Break]s between annotations. *)
 let sparse d =
   let rec check annots seenbrk = function
     | [] -> true
