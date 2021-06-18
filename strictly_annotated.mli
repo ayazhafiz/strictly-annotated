@@ -5,6 +5,15 @@
 
 type annotation = Annot of string  (** An annotation on a document. *)
 
+(** The layout mode to use for a group. *)
+type layout_mode =
+  | Auto
+      (** Attempt to lay this group out horizontally, switching to a vertical
+          layout if the horizontal layout does not fit. *)
+  | Vertical
+      (** Always lay this group out vertically.
+          NB: This will result all parent groups being laid out vertically as well. *)
+
 (** A document to be pretty-printed. *)
 type doc =
   | Nil  (** An empty document. *)
@@ -20,12 +29,12 @@ type doc =
       (** [Nest (i, doc)] instructs the pretty-printer to indent newlines broken in
           [doc] by [i] spaces. This indentation is cumulative between nested
           [Nest]s. *)
-  | Group of doc
-      (** [Group doc] describes a "pretty-printing group". All optional line
-           breaks (those given by [Break]) in a group are either turned into a
-           space or a newline. The choice for an outer group is independent of
-           the choice made for a nested group, but the decision for an outer
-           group is made first. *)
+  | Group of doc * layout_mode
+      (** [Group(doc, layout)] describes a "pretty-printing group". All optional
+          line breaks (those given by [Break]) in a group are either turned into
+          a space or a newline. The choice for an outer group is independent of
+          the choice made for a nested group, but the decision for an outer
+          group is made first. *)
 
 val empty : doc
 (** [empty] is [Nil] *)
@@ -49,7 +58,10 @@ val break : string -> doc
 (** [break s] is [Break s] *)
 
 val group : doc -> doc
-(** [group d] is [Group d] *)
+(** [group d] is [Group(d, Auto)] *)
+
+val vgroup : doc -> doc
+(** [vgroup d] is [Group(d, Vertical)] *)
 
 val ( ^^ ) : doc -> doc -> doc
 (** [x ^^ y] is [Cons(x, y)]. *)

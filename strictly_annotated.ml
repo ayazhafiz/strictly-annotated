@@ -1,12 +1,14 @@
 type annotation = Annot of string
 
+type layout_mode = Auto | Vertical
+
 type doc =
   | Nil
   | Text of string * annotation option
   | Break of string
   | Cons of doc * doc
   | Nest of int * doc
-  | Group of doc
+  | Group of doc * layout_mode
 
 let ( ^^ ) x y = Cons (x, y)
 
@@ -24,7 +26,9 @@ let breakhint = Break ""
 
 let break s = Break s
 
-let group d = Group d
+let group d = Group (d, Auto)
+
+let vgroup d = Group (d, Vertical)
 
 let ( ^| ) x y =
   match (x, y) with _, Nil -> x | Nil, _ -> y | x, y -> x ^^ space ^^ y
@@ -67,7 +71,8 @@ let rec fits w = function
          called with a Break with Break mode"
   | (i, m, Cons (x, y)) :: rest -> fits w ((i, m, x) :: (i, m, y) :: rest)
   | (i, m, Nest (j, x)) :: rest -> fits w ((i + j, m, x) :: rest)
-  | (i, _, Group x) :: rest -> fits w ((i, Flat, x) :: rest)
+  | (_, _, Group (_, Vertical)) :: _ -> false
+  | (i, _, Group (x, Auto)) :: rest -> fits w ((i, Flat, x) :: rest)
 
 (** [sparse d] determines if the flat group [d] is sparsely annotated in the
     sense that there are no [Break]s between annotations. *)
@@ -81,7 +86,7 @@ let sparse d =
     | Text (_, Some _) :: _ when annots >= 1 && seenbrk -> false
     | Text (_, Some _) :: rest -> check (annots + 1) seenbrk rest
     | Break _ :: rest -> check annots true rest
-    | Group x :: rest -> check annots seenbrk (x :: rest)
+    | Group (x, _) :: rest -> check annots seenbrk (x :: rest)
   in
   check 0 false d
 
@@ -98,7 +103,8 @@ let layout w =
     | (i, Break, Break _) :: rest -> IrNewline (i, go i rest)
     | (i, m, Cons (x, y)) :: rest -> go l ((i, m, x) :: (i, m, y) :: rest)
     | (i, m, Nest (j, x)) :: rest -> go l ((i + j, m, x) :: rest)
-    | (i, _, Group x) :: rest ->
+    | (i, _, Group (x, Vertical)) :: rest -> go l ((i, Break, x) :: rest)
+    | (i, _, Group (x, Auto)) :: rest ->
         if sparse [ x ] && fits (w - l) [ (i, Flat, x) ] then
           go l ((i, Flat, x) :: rest)
         else go l ((i, Break, x) :: rest)
@@ -168,7 +174,7 @@ let align_global lines = align_annotations [ (`Annot, lines) ]
 
 let pretty ?(global_align = false) w annot_prefix doc =
   let ir =
-    layout w 0 [ (0, Flat, Group doc) ]
+    layout w 0 [ (0, Flat, group doc) ]
     |> linearize
     |> if global_align then align_global else align_local
   in
