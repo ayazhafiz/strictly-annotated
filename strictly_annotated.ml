@@ -20,12 +20,17 @@ let nest i x = Nest (i, x)
 
 let space = Break " "
 
+let breakhint = Break ""
+
 let break s = Break s
 
 let group d = Group d
 
 let ( ^| ) x y =
   match (x, y) with _, Nil -> x | Nil, _ -> y | x, y -> x ^^ space ^^ y
+
+let ( ^. ) x y =
+  match (x, y) with _, Nil -> x | Nil, _ -> y | x, y -> x ^^ breakhint ^^ y
 
 let strlen = String.length
 

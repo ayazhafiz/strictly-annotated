@@ -42,6 +42,9 @@ val nest : int -> doc -> doc
 val space : doc
 (** [space] is [Break " "] *)
 
+val breakhint : doc
+(** [breakhint] is [Break ""] *)
+
 val break : string -> doc
 (** [break s] is [Break s] *)
 
@@ -52,9 +55,10 @@ val ( ^^ ) : doc -> doc -> doc
 (** [x ^^ y] is [Cons(x, y)]. *)
 
 val ( ^| ) : doc -> doc -> doc
-(** [x ^| y] concatenates two documents with an [Break] as given by [space],
-    collapsing any [Nil]s along the way. That is, [x ^| y] is [x ^^ space ^^ y],
-    modulo [x] or [y] being [Nil]. *)
+(** [x ^| y] is [x ^^ space ^^ y], modulo [x] or [y] being Nil. *)
+
+val ( ^. ) : doc -> doc -> doc
+(** [x ^. y] is [x ^^ breakhint ^^ y], modulo [x] or [y] being Nil. *)
 
 val pretty : ?global_align:bool -> int -> string -> doc -> string
 (** [pretty ?global_align width doc] pretty-prints [doc] with a maximum line
