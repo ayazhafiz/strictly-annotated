@@ -54,7 +54,7 @@ let string_of_line aprefix = function
 let string_of_lines aprefix lines =
   List.map (string_of_line aprefix) lines |> String.concat "\n"
 
-type break_mode = Flat | Break
+type break_mode = Horizontal | Vertical
 
 (** [fits width d] determines if the document [d] can fit on a single
     line. Note that [d] is not a [doc], but a list of triples of form
@@ -64,15 +64,15 @@ let rec fits w = function
   | [] -> true
   | (_, _, Nil) :: rest -> fits w rest
   | (_, _, Text (s, _)) :: rest -> fits (w - strlen s) rest
-  | (_, Flat, Break s) :: rest -> fits (w - strlen s) rest
-  | (_, Break, Break _) :: _ ->
+  | (_, Horizontal, Break s) :: rest -> fits (w - strlen s) rest
+  | (_, Vertical, Break _) :: _ ->
       failwith
         "fits should be used to determine if Break mode is necessary, not \
          called with a Break with Break mode"
   | (i, m, Cons (x, y)) :: rest -> fits w ((i, m, x) :: (i, m, y) :: rest)
   | (i, m, Nest (j, x)) :: rest -> fits w ((i + j, m, x) :: rest)
   | (_, _, Group (_, Vertical)) :: _ -> false
-  | (i, _, Group (x, Auto)) :: rest -> fits w ((i, Flat, x) :: rest)
+  | (i, _, Group (x, Auto)) :: rest -> fits w ((i, Horizontal, x) :: rest)
 
 (** [sparse d] determines if the flat group [d] is sparsely annotated in the
     sense that there are no [Break]s between annotations. *)
@@ -99,15 +99,15 @@ let layout w =
     | (_, _, Nil) :: rest -> go l rest
     | (_, _, Text (s, a)) :: rest ->
         IrText (s, Option.to_list a, go (l + strlen s) rest)
-    | (_, Flat, Break s) :: rest -> IrText (s, [], go (l + strlen s) rest)
-    | (i, Break, Break _) :: rest -> IrNewline (i, go i rest)
+    | (_, Horizontal, Break s) :: rest -> IrText (s, [], go (l + strlen s) rest)
+    | (i, Vertical, Break _) :: rest -> IrNewline (i, go i rest)
     | (i, m, Cons (x, y)) :: rest -> go l ((i, m, x) :: (i, m, y) :: rest)
     | (i, m, Nest (j, x)) :: rest -> go l ((i + j, m, x) :: rest)
-    | (i, _, Group (x, Vertical)) :: rest -> go l ((i, Break, x) :: rest)
+    | (i, _, Group (x, Vertical)) :: rest -> go l ((i, Vertical, x) :: rest)
     | (i, _, Group (x, Auto)) :: rest ->
-        if sparse [ x ] && fits (w - l) [ (i, Flat, x) ] then
-          go l ((i, Flat, x) :: rest)
-        else go l ((i, Break, x) :: rest)
+        if sparse [ x ] && fits (w - l) [ (i, Horizontal, x) ] then
+          go l ((i, Horizontal, x) :: rest)
+        else go l ((i, Vertical, x) :: rest)
   in
   go
 
@@ -174,7 +174,7 @@ let align_global lines = align_annotations [ (`Annot, lines) ]
 
 let pretty ?(global_align = false) w annot_prefix doc =
   let ir =
-    layout w 0 [ (0, Flat, group doc) ]
+    layout w 0 [ (0, Horizontal, group doc) ]
     |> linearize
     |> if global_align then align_global else align_local
   in
