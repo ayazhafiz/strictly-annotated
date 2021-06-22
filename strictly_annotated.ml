@@ -115,6 +115,10 @@ let layout w =
     sequence of [line]s ready for printing. *)
 let linearize ir =
   let distribute_line (indent, text, annots) =
+    let many_annots (Annot a) =
+      String.split_on_char '\n' a |> List.map (fun an -> Annot an)
+    in
+    let annots = List.concat_map many_annots annots in
     match annots with
     | [] -> [ Line (indent, text, None) ]
     | a :: rest ->
