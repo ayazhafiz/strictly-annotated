@@ -1,6 +1,8 @@
 # Strictly Annotated
 
 Strictly Annotated is a pretty-printer derived from [Strictly Pretty](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.2200) (Lindig 2000).
+See below for a small introduction, or [this blog post](https://ayazhafiz.com/articles/21/strictly-annotated) for a detailed design.
+Or just read the source, it's quite short.
 
 The contribution of this package is pretty-printing in the presence of
 annotations, which can be thought of comments in source code or some kind of
@@ -34,8 +36,6 @@ then  # true branch
 else  # false branch
   a + b
 ```
-
-TODO: link blog post
 
 ## History and Citations
 

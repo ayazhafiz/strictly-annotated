@@ -1,7 +1,7 @@
 (** A module for pretty printing with annotations.
     The pretty printing interface comes from "Strictly Prettier" (Lindig, 2000).
     The contribution of this module is the algorithms for pretty printing with
-    annotations, described in <LINK ARTICLE>. *)
+    annotations, described in https://ayazhafiz.com/articles/21/strictly-annotated. *)
 
 type annotation = Annot of string  (** An annotation on a document. *)
 
